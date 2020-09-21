@@ -1,0 +1,13 @@
+[Unit]
+Description=Nodemon FOLIO ILL Reporting Service
+After=network.target
+
+[Service]
+Type=forking
+Restart=always
+RestartSec=1
+User=folio-ill-requests
+ExecStart=/home/folio-ill-requests/prod/scripts/prod-startup.sh
+
+[Install]
+WantedBy=multi-user.target
