@@ -10,7 +10,7 @@ fi
 
 date
 echo "Found rebuild file. Deleting it!"
-rm /var/www/rebuild/now
+rm /var/www/rebuild/fir-now
 
 # Prep environment
 cd ~/prod/
@@ -42,7 +42,7 @@ if [ -d ~/prod/dist/ ]; then
 fi
 
 echo "Restarting nodemon service!"
-sudo /bin/systemctl restart folioill_nodemon
+sudo /bin/systemctl restart fir_nodemon
 
 echo "Done!"
 date
