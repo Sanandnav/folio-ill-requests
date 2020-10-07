@@ -13,7 +13,7 @@ class Biblo extends Component {
       genre: "",
       tit: "",
       aut: "",
-      isbd: "",
+      isbn: "",
       issn: "",
       doi: "",
       date: "",
@@ -25,6 +25,7 @@ class Biblo extends Component {
       issue: "",
       spage: "",
       pages: "",
+      genre: "",
     };
   }
   componentWillMount() {
@@ -32,8 +33,9 @@ class Biblo extends Component {
       tit: this.state.url.get("title"),
       atit: this.state.url.get("atitle"),
       aut: this.state.url.get("aulast"),
-      isbd: this.state.url.get("isbd"),
+      isbn: this.state.url.get("ISBN"),
       issn: this.state.url.get("issn"),
+      genre: this.state.url.get("genre"),
       volume: this.state.url.get("volume"),
       issue: this.state.url.get("issue"),
       spage: this.state.url.get("spage"),
@@ -50,14 +52,16 @@ class Biblo extends Component {
 
   submitHandle = (event) => {
     event.preventDefault();
-    const i = this.state.isbd;
+    const i = this.state.isbn;
     const u = sessionStorage.getItem("user");
     const us = JSON.parse(u);
-
-    //console.log(i);
+    const a = this.state.aut;
+    const bib = this.state.atit;
+    //const bib = JSON.stringify(biblos);
+    //console.log(bib);
     //console.log(us);
 
-    fetch("./api/request/" + i + "&" + us)
+    fetch("./api/request/" + i + "&" + a + "&" + us + "&" + bib)
       .then((res) => res.json())
       .then((r) => this.setState({ respo: r.re }))
       .then(() => console.log(this.state.respo));
@@ -79,8 +83,16 @@ class Biblo extends Component {
                 <Form.Group>
                   <Form.Label>
                     <FormattedMessage
+                      id="bib.genre"
+                      defaultMessage="Tipo de publicacion"
+                    />
+                    :
+                  </Form.Label>
+                  <Form.Control defaultValue={this.state.genre}></Form.Control>
+                  <Form.Label>
+                    <FormattedMessage
                       id="bib.atittle"
-                      defaultMessage="Titulo del artigulo"
+                      defaultMessage="Titulo del articulo"
                     />
                     :
                   </Form.Label>
@@ -95,7 +107,7 @@ class Biblo extends Component {
                   </Form.Label>
                   <Form.Control defaultValue={this.state.aut}></Form.Control>
                   <Form.Label>ISBN: </Form.Label>
-                  <Form.Control defaultValue={this.state.isbd}></Form.Control>
+                  <Form.Control defaultValue={this.state.isbn}></Form.Control>
                   <Form.Label>ISSN: </Form.Label>
                   <Form.Control defaultValue={this.state.issn}></Form.Control>
                   <Form.Label>DOI: </Form.Label>
