@@ -1,177 +1,165 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable function-paren-newline */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable dot-notation */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable react/sort-comp */
+/* eslint-disable no-var */
+/* eslint-disable arrow-parens */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable prefer-template */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable quotes */
+
 import React, { Component } from "react";
-import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import ListGroup from "react-bootstrap/ListGroup";
+import Conteiner from "react-bootstrap/Container";
 import { FormattedMessage } from "react-intl";
 
-class Biblo extends Component {
+const queryString = require("query-string");
+
+class UsrForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: new URLSearchParams(window.location.search),
-      genre: "",
-      tit: "",
-      aut: "",
-      isbn: "",
-      issn: "",
-      doi: "",
-      date: "",
-      uri: "",
-      coment: "",
-      respo: "",
-      atit: "",
-      volume: "",
-      issue: "",
-      spage: "",
-      pages: "",
-      genre: "",
+      usr: "",
+      pass: "",
+      data: "",
     };
-  }
-  componentWillMount() {
-    this.setState({
-      tit: this.state.url.get("title"),
-      atit: this.state.url.get("atitle"),
-      aut: this.state.url.get("aulast"),
-      isbn: this.state.url.get("ISBN"),
-      issn: this.state.url.get("issn"),
-      genre: this.state.url.get("genre"),
-      volume: this.state.url.get("volume"),
-      issue: this.state.url.get("issue"),
-      spage: this.state.url.get("spage"),
-      pages: this.state.url.get("pages"),
-      doi: this.state.url.get("doi"),
-      date: this.state.url.get("date"),
-      uri: this.state.url.get("uri"),
-    });
   }
 
   myChangeHandle = (event) => {
-    this.setState({ coment: event.target.value });
+    this.setState({
+      usr: event.target.value,
+    });
+  };
+
+  mySetPassword = (event) => {
+    this.setState({ pass: event.target.value });
+    // console.log(this.state.pass);
   };
 
   submitHandle = (event) => {
     event.preventDefault();
-    const i = this.state.isbn;
-    const u = sessionStorage.getItem("user");
-    const us = JSON.parse(u);
-    const a = this.state.aut;
-    const bib = this.state.atit;
-    //const bib = JSON.stringify(biblos);
-    //console.log(bib);
-    //console.log(us);
-
-    fetch("./api/request/" + i + "&" + a + "&" + us + "&" + bib)
+    const usr = this.state.usr;
+    const pass = this.state.pass;
+    // console.log(userName);
+    fetch("./api/getUser/" + usr + "&" + pass)
       .then((res) => res.json())
-      .then((r) => this.setState({ respo: r.re }))
-      .then(() => console.log(this.state.respo));
+      .then((token) => this.setState({ data: token.info }))
+      .then(() =>
+        sessionStorage.setItem("user", JSON.stringify(this.state.data["id"]))
+      );
   };
 
+  async componentDidMount() {
+    const params = queryString.parse(location.search);
+    // console.log(params);
+    if (params.cid) {
+      const id = params.cid;
+      sessionStorage.setItem("cid", id);
+      // console.log(id);
+      fetch("./api/id/" + id);
+    }
+  }
+
   render() {
+    var apitkn = this.state.data.personal;
+
     return (
-      <Container>
+      <Conteiner className="mt-2">
         <Card border="dark">
           <Card.Header as="h5">
             <FormattedMessage
-              id="bib.header"
-              defaultMessage="Datos bibliograficos"
+              id="app.header"
+              defaultMessage="Datos del Usuario"
             />
           </Card.Header>
           <Card.Body>
+            <Form onSubmit={this.submitHandle}>
+              <Form.Group>
+                <Form.Control
+                  as="input"
+                  type="text"
+                  onChange={this.myChangeHandle}
+                  placeholder="Usuario"
+                />
+                <Form.Control
+                  as="input"
+                  type="password"
+                  onChange={this.mySetPassword}
+                  placeholder="password"
+                  className="mt-2"
+                />
+                <Button
+                  type="submit"
+                  variant="outline-success"
+                  size="sm"
+                  className="mt-2"
+                  block
+                >
+                  <FormattedMessage id="app.button" defaultMessage="Ingreso" />
+                </Button>
+              </Form.Group>
+            </Form>
             <Card.Text>
-              <Form onSubmit={this.submitHandle}>
-                <Form.Group>
-                  <Form.Label>
+              <ListGroup variant="flush">
+                <ListGroup.Item>
+                  <FormattedMessage id="app.usr" defaultMessage="Usuario" />
+                  <span>: {this.state.usr}</span>
+                </ListGroup.Item>
+                {apitkn ? (
+                  <ListGroup.Item>
+                    <FormattedMessage id="app.name" defaultMessage="Nombre" />:{" "}
+                    {apitkn["firstName"]}
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
+                    <FormattedMessage id="app.name" defaultMessage="Nombre" />:
+                    --
+                  </ListGroup.Item>
+                )}
+                {apitkn ? (
+                  <ListGroup.Item>
                     <FormattedMessage
-                      id="bib.genre"
-                      defaultMessage="Tipo de publicacion"
+                      id="app.lastname"
+                      defaultMessage="Apellido"
                     />
-                    :
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.genre}></Form.Control>
-                  <Form.Label>
+                    : {apitkn["lastName"]}
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
                     <FormattedMessage
-                      id="bib.atittle"
-                      defaultMessage="Titulo del articulo"
+                      id="app.lastname"
+                      defaultMessage="Apellido"
                     />
-                    :
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.atit}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage id="bib.tittle" defaultMessage="Titulo" />
-                    :
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.tit}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage id="bib.aut" defaultMessage="Autor" />:{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.aut}></Form.Control>
-                  <Form.Label>ISBN: </Form.Label>
-                  <Form.Control defaultValue={this.state.isbn}></Form.Control>
-                  <Form.Label>ISSN: </Form.Label>
-                  <Form.Control defaultValue={this.state.issn}></Form.Control>
-                  <Form.Label>DOI: </Form.Label>
-                  <Form.Control defaultValue={this.state.doi}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage id="bib.date" defaultMessage="Fecha" />:{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.date}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage
-                      id="bib.volume"
-                      defaultMessage="Volumen"
-                    />
-                    :{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.volume}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage id="bib.issue" defaultMessage="Numero" />:{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.issue}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage
-                      id="bib.spage"
-                      defaultMessage="Pagina de inicio"
-                    />
-                    :{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.spage}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage id="bib.pages" defaultMessage="Paginas" />
-                    :{" "}
-                  </Form.Label>
-                  <Form.Control defaultValue={this.state.pages}></Form.Control>
-                  <Form.Label>URL: </Form.Label>
-                  <Form.Control defaultValue={this.state.uri}></Form.Control>
-                  <Form.Label>
-                    <FormattedMessage
-                      id="bib.comments"
-                      defaultMessage="Comentario"
-                    />
-                    :{" "}
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    row="3"
-                    onChange={this.myChangeHandle}
-                  />
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    className="mt-2"
-                    type="submit"
-                    block
-                  >
-                    Enviar
-                  </Button>
-                </Form.Group>
-              </Form>
+                    : --
+                  </ListGroup.Item>
+                )}
+                {apitkn ? (
+                  <ListGroup.Item>
+                    <FormattedMessage id="app.Email" defaultMessage="Email" />:{" "}
+                    {apitkn["email"]}
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
+                    <FormattedMessage id="app.Email" defaultMessage="Email" />:
+                    --
+                  </ListGroup.Item>
+                )}
+              </ListGroup>
             </Card.Text>
           </Card.Body>
         </Card>
-      </Container>
+      </Conteiner>
     );
   }
 }
 
-export default Biblo;
+export default UsrForm;

@@ -1,9 +1,16 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/prefer-stateless-function */
+/* eslint-disable import/order */
+/* eslint-disable quotes */
 import React, { useState } from "react";
 import { IntlProvider, FormattedMessage } from "react-intl";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
-//import languages
+// import languages
 import esCO from "../languages/es-CO.json";
 import enUS from "../languages/en-US.json";
 import ptBR from "../languages/pt-BR.json";
@@ -33,7 +40,7 @@ export default function Wrapper(props) {
     <IntlProvider locale={locale} messages={lang}>
       <div>
         <Navbar bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Home</Navbar.Brand>
+          <Navbar.Brand href="#home">Folio ILL form</Navbar.Brand>
           <NavDropdown
             title={
               <FormattedMessage
